@@ -1,18 +1,6 @@
 
 local modules = {
-
   'caffeine',
-  'cheatsheet',
-  -- Do not use hazel module without configuring the Dump folder or you could
-  -- lose data!
-  -- 'hazel',
-  'notational',
-  'scratchpad',
-  'songs',
-  'timer',
-  'weather',
-  'wifi',
-  'worktime',
 }
 local hyper = { "cmd", "ctrl", "alt",  "shift" }
 
@@ -44,63 +32,63 @@ hs.window.animationDuration = 0
   win:minimize()
   end)
 
--- left, upper corner
-hs.hotkey.bind(hyper, "4", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
 
-  f.x = max.x / 2
-  f.y = max.y / 2
-  f.w = max.w / 2
-  f.h = max.h / 2
-  win:setFrame(f)
+function moveToScreen(screenPos)
+    window = hs.window.focusedWindow()
+    screen = hs.screen.find({x=screenPos, y=0})
+    window:moveToScreen(screen)
+  end
+  
+  hs.hotkey.bind(hyper, "1", function()
+    moveToScreen(0)
+  end)
+  
+  hs.hotkey.bind(hyper, "2", function()
+    moveToScreen(1)
+  end)
+
+
+
+
+local leftScreen = hs.screen{x=0,y=0}
+local rightScreen = hs.screen{x=1,y=0}
+
+
+
+local twoScreenLayout = {
+ {"Google Chrome", nil, rightScreen, hs.layout.left50, nil, nil},
+ {"iTerm2", nil, rightScreen, hs.layout.right50, nil, nil},
+ {"Spotify", nil, leftScreen, hs.layout.left50, nil, nil},
+ {"Calendar", nil, leftScreen, hs.layout.right50, nil, nil},
+ {"Visual Studio Code", nil, rightScreen, hs.layout.rigth50, nil, nil},
+ {"Mail", nil, leftScreen, hs.layout.right50, nil, nil},
+ {"Robo 3T", nil, rightScreen, hs.layout.right50, nil, nil},
+ {"Slack", nil, leftScreen, hs.layout.left50, nil, nil},
+}
+
+function switchLayout()
+  local numScreens = #hs.screen.allScreens()
+  local layout = {}
+  if numScreens == 1 then
+    layout = twoScreenLayout
+  elseif numScreens == 2 then
+    layout = twoScreenLayout
+  end
+  hs.layout.apply(layout)
+end
+
+hs.hotkey.bind(hyper, "w", function()
+  switchLayout()
 end)
 
 
--- Right, lower corner
-hs.hotkey.bind(hyper, "2", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
-
-  f.x = max.x + (max.w / 2)
-  f.y = max.y + (max.h / 2)
-  f.w = max.w
-  f.h = max.h / 2
-  win:setFrame(f)
+hs.hotkey.bind(hyper, "delete", function()
+  hs.caffeinate.lockScreen()
 end)
 
 
-
--- Right upper corner
-hs.hotkey.bind(hyper, "1", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
-
-
-  f.x = max.x + (max.w / 2)
-  f.y = max.y / 2
-  f.w = max.w / 2
-  f.h = max.h / 2
-  win:setFrame(f)
-end)
--- Left lower corner
-hs.hotkey.bind(hyper, "3", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-  local screen = win:screen()
-  local max = screen:frame()
-
-  f.x = max.x / 2
-  f.y = max.y + (max.h / 2)
-  f.w = max.w / 2
-  f.h = max.h / 2
-  win:setFrame(f)
+hs.hotkey.bind(hyper, "end", function()
+  hs.caffeinate.shutdownSystem()
 end)
 
   local applicationHotkeys = {
@@ -113,15 +101,13 @@ end)
     a = "Activity Monitor",
     b = "Bitwarden",
     z = "zoom.us",
-    d = "discord",
+    d = "Calendar",
     i = "IntelliJ IDEA CE",
     r = "Reminders",
     y = "PyCharm CE with Anaconda Plugin",
-    l = "League of Legends",
-    w = "Preview",
-    q = "Quicktime Player"
-
+    l = "Slack",
   }
+
   for key, app in pairs(applicationHotkeys) do
     hs.hotkey.bind(hyper, key, function()
       hs.application.launchOrFocus(app)
@@ -161,6 +147,9 @@ end
   hs.hotkey.bind(hyper, 'p', hs.spotify.playpause)
   hs.hotkey.bind(hyper, ']', hs.spotify.next)
   hs.hotkey.bind(hyper, '[', hs.spotify.previous)
+
+  hs.alert.show("Hammerspoon config loaded")
+
 
 
 
