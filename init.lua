@@ -2,6 +2,15 @@
 local modules = {
   'caffeine',
 }
+
+-- Install and load Spoons
+hs.loadSpoon("SpoonInstall")
+spoon.use_syncinstall = true
+spoon.SpoonInstall:andUse("Caffeine")
+
+-- Caffeinate toggle in menu bar.
+spoon.Caffeine:start()
+
 local hyper = { "cmd", "ctrl", "alt",  "shift" }
 
 
@@ -33,19 +42,45 @@ hs.window.animationDuration = 0
   end)
 
 
-function moveToScreen(screenPos)
+  function moveToScreen(screenPos)
+    hs.alert.show(screenPos)
     window = hs.window.focusedWindow()
-    screen = hs.screen.find({x=screenPos, y=0})
-    window:moveToScreen(screen)
+    if screenPos == 1 then
+      screen = hs.screen.find({x=0, y=0})
+      window:moveToScreen(screen)
+      window:moveToUnit(hs.layout.left50)
+    elseif screenPos == 2 then
+      screen = hs.screen.find({x=0, y=0})
+      window:moveToScreen(screen)
+      window:moveToUnit(hs.layout.right50)
+    elseif screenPos == 3 then
+      screen = hs.screen.find({x=1, y=0})
+      window:moveToScreen(screen)
+      window:moveToUnit(hs.layout.left50)
+    elseif screenPos == 4 then
+      screen = hs.screen.find({x=1, y=0})
+      window:moveToScreen(screen)
+      window:moveToUnit(hs.layout.right50)
+    end
   end
   
   hs.hotkey.bind(hyper, "1", function()
-    moveToScreen(0)
+    moveToScreen(1)
   end)
   
   hs.hotkey.bind(hyper, "2", function()
-    moveToScreen(1)
+    moveToScreen(2)
   end)
+
+  hs.hotkey.bind(hyper, "3", function()
+    moveToScreen(3)
+  end)
+
+
+  hs.hotkey.bind(hyper, "4", function()
+    moveToScreen(4)
+  end)
+
 
 
 
@@ -101,11 +136,13 @@ end)
     a = "Activity Monitor",
     b = "Bitwarden",
     z = "zoom.us",
-    d = "Calendar",
+    d = "discord",
     i = "IntelliJ IDEA CE",
     r = "Reminders",
     y = "PyCharm CE with Anaconda Plugin",
-    l = "Slack",
+    l = "League of Legends",
+    w = "Preview",
+    q = "Quicktime Player"
   }
 
   for key, app in pairs(applicationHotkeys) do
