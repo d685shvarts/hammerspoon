@@ -46,19 +46,19 @@ hs.window.animationDuration = 0
     hs.alert.show(screenPos)
     window = hs.window.focusedWindow()
     if screenPos == 1 then
-      screen = hs.screen.find({x=0, y=0})
+      screen = hs.screen.find({x=-1, y=0})
       window:moveToScreen(screen)
       window:moveToUnit(hs.layout.left50)
     elseif screenPos == 2 then
-      screen = hs.screen.find({x=0, y=0})
+      screen = hs.screen.find({x=-1, y=0})
       window:moveToScreen(screen)
       window:moveToUnit(hs.layout.right50)
     elseif screenPos == 3 then
-      screen = hs.screen.find({x=1, y=0})
+      screen = hs.screen.find({x=-0, y=0})
       window:moveToScreen(screen)
       window:moveToUnit(hs.layout.left50)
     elseif screenPos == 4 then
-      screen = hs.screen.find({x=1, y=0})
+      screen = hs.screen.find({x=-0, y=0})
       window:moveToScreen(screen)
       window:moveToUnit(hs.layout.right50)
     end
@@ -85,17 +85,17 @@ hs.window.animationDuration = 0
 
 
 
-local leftScreen = hs.screen{x=0,y=0}
-local rightScreen = hs.screen{x=1,y=0}
+local leftScreen = hs.screen{x=-1,y=0}
 
+local rightScreen = hs.screen{x=0,y=0}
 
 
 local twoScreenLayout = {
- {"Google Chrome", nil, rightScreen, hs.layout.left50, nil, nil},
+  {"Google Chrome", nil, rightScreen, hs.layout.left50, nil, nil},
+ {"Code", nil, rightScreen, hs.layout.right50, nil, nil},
  {"iTerm2", nil, rightScreen, hs.layout.right50, nil, nil},
  {"Spotify", nil, leftScreen, hs.layout.left50, nil, nil},
  {"Calendar", nil, leftScreen, hs.layout.right50, nil, nil},
- {"Visual Studio Code", nil, rightScreen, hs.layout.rigth50, nil, nil},
  {"Mail", nil, leftScreen, hs.layout.right50, nil, nil},
  {"Robo 3T", nil, rightScreen, hs.layout.right50, nil, nil},
  {"Slack", nil, leftScreen, hs.layout.left50, nil, nil},
@@ -104,9 +104,11 @@ local twoScreenLayout = {
 function switchLayout()
   local numScreens = #hs.screen.allScreens()
   local layout = {}
+  hs.alert.show(numScreens)
   if numScreens == 1 then
     layout = twoScreenLayout
   elseif numScreens == 2 then
+    hs.alert.show('TWO')
     layout = twoScreenLayout
   end
   hs.layout.apply(layout)
@@ -137,12 +139,9 @@ end)
     b = "Bitwarden",
     z = "zoom.us",
     d = "discord",
-    i = "IntelliJ IDEA CE",
     r = "Reminders",
     y = "PyCharm CE with Anaconda Plugin",
     l = "League of Legends",
-    w = "Preview",
-    q = "Quicktime Player"
   }
 
   for key, app in pairs(applicationHotkeys) do
@@ -180,12 +179,42 @@ end
     hs.caffeinate.lockScreen()
   end)
 
+  hs.hotkey.bind(hyper, "n", function()
+    local test = hs.application.frontmostApplication()
+    hs.alert.show(test)
+  end)
+
+  function getVolumeIncrement()
+    local volume = hs.audiodevice.current().volume
+    -- When the volume gets near zero, change it in smaller increments. Otherwise even the first increment
+    -- above zero may be too loud.
+    -- NOTE(phil): I noticed that using a decimal smaller than 0.4 will sometimes result in the volume remaining
+    -- unchanged after calling setVolume, as if OSX only lets you change the volume by large increments.
+    if volume < 2 then return 0.4 else return 2 end
+  end
+  
+  hs.hotkey.bind(hyper, "9", function()
+    local newVolume = hs.audiodevice.current().volume - getVolumeIncrement()
+    hs.alert.show("Volume " .. newVolume .. "%", {}, 0.5)
+    hs.audiodevice.defaultOutputDevice():setVolume(newVolume)
+  end)
+  
+  hs.hotkey.bind(hyper, "0", function()
+    local newVolume = hs.audiodevice.current().volume + getVolumeIncrement()
+    hs.alert.show("Volume " .. newVolume .. "%", {}, 0.5)
+    hs.audiodevice.defaultOutputDevice():setVolume(newVolume)
+  end)
+
+
 
   hs.hotkey.bind(hyper, 'p', hs.spotify.playpause)
   hs.hotkey.bind(hyper, ']', hs.spotify.next)
   hs.hotkey.bind(hyper, '[', hs.spotify.previous)
 
   hs.alert.show("Hammerspoon config loaded")
+
+
+
 
 
 
