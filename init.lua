@@ -8,6 +8,8 @@ hs.loadSpoon("SpoonInstall")
 spoon.use_syncinstall = true
 spoon.SpoonInstall:andUse("Caffeine")
 
+hs.application.enableSpotlightForNameSearches(true)
+
 -- Caffeinate toggle in menu bar.
 spoon.Caffeine:start()
 
@@ -89,6 +91,8 @@ local leftScreen = hs.screen{x=-1,y=0}
 
 local rightScreen = hs.screen{x=0,y=0}
 
+local twoScreenNames = {"Google Chrome", "Visual Studio Code", "iTerm", "Spotify", "Calendar", "Mail"}
+
 
 local twoScreenLayout = {
   {"Google Chrome", nil, rightScreen, hs.layout.left50, nil, nil},
@@ -97,18 +101,17 @@ local twoScreenLayout = {
  {"Spotify", nil, leftScreen, hs.layout.left50, nil, nil},
  {"Calendar", nil, leftScreen, hs.layout.right50, nil, nil},
  {"Mail", nil, leftScreen, hs.layout.right50, nil, nil},
- {"Robo 3T", nil, rightScreen, hs.layout.right50, nil, nil},
- {"Slack", nil, leftScreen, hs.layout.left50, nil, nil},
 }
 
 function switchLayout()
+  for i, name in ipairs(twoScreenNames) do
+    hs.application.launchOrFocus(name)
+  end
   local numScreens = #hs.screen.allScreens()
   local layout = {}
-  hs.alert.show(numScreens)
   if numScreens == 1 then
     layout = twoScreenLayout
   elseif numScreens == 2 then
-    hs.alert.show('TWO')
     layout = twoScreenLayout
   end
   hs.layout.apply(layout)
