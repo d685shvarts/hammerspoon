@@ -133,6 +133,7 @@ end)
 
   local applicationHotkeys = {
     c = 'Google Chrome',
+    g = 'GIMP-2.10',
     s = 'Spotify',
     t = "iTerm",
     v = "Visual Studio Code",
